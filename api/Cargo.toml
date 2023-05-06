@@ -1,0 +1,30 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+authors = ["Blen Assefa <blassefa@constructor.university>"]
+description = "The REST API serving the clan community website and the api"
+license = "GPL-3.0-or-later"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+dotenv = "0.15.0"
+mongodb = "2.5.0"
+lazy_static = "1.4.0"
+thiserror = "1.0.40"
+use = "0.0.0"
+reqwest = "0.11.16"
+
+[dependencies.rocket_db_pools]
+version = "0.1.0-rc.2"
+features = ["mongodb"]
+
+[lib]
+name = "api"
+path = "src/main.rs"
+crate-type = ["rlib"]
+
+

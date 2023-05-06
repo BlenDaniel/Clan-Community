@@ -1,0 +1,6 @@
+[global]
+address = "::1"
+port = 8000
+
+[default.databases.mongodb]
+url = "mongodb://localhost:27017/clan_community"
