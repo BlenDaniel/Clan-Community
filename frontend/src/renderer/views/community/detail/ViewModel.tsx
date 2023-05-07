@@ -37,12 +37,12 @@ export default function CommunityDetailViewModel(): CommunityDetailViewModel {
   }
 
   async function updateCommunity(id: string): Promise<void> {
-    const { result, error } = await UpdateCommunityUseCase(id, values);
+    const { error } = await UpdateCommunityUseCase(id, values);
     setError(error!);
   }
 
   async function deleteCommunity(id: string): Promise<void> {
-    const { result, error } = await DeleteCommunityUseCase(id);
+    const { error } = await DeleteCommunityUseCase(id);
     setError(error!);
   }
 

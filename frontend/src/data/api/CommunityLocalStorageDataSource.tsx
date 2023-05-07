@@ -37,7 +37,7 @@ export function getOne(
 }
 
 export async function create(communityData: CommunityData): Promise<{ error: string | null; result: boolean }> {
-  const { error, result } = await getAll();
+  const { result } = await getAll();
   const data = result;
 
   const communityNew: Community = {
@@ -54,7 +54,7 @@ export async function create(communityData: CommunityData): Promise<{ error: str
 export async function deleteOne(
   id: string
 ): Promise<{ error: string | null; result: boolean }> {
-  const { error, result } = await getAll();
+  const {  result } = await getAll();
   const data = result;
   const deleteIndex = data.findIndex((item) => item.id === id);
   data.splice(deleteIndex, 1);
@@ -66,7 +66,7 @@ export async function update(
   id: string,
   CommunityData: { name: string; price: number }
 ): Promise<{ error: string | null; result: boolean }> {
-  const { error, result } = await getAll();
+  const {  result } = await getAll();
   const data = result;
 
   data.forEach((item) => {

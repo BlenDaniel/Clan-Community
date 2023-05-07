@@ -26,11 +26,20 @@ pub enum Error {
     #[error("You are not an admin user")]
     NotAdmin,
 
+    #[error("User not found")]
+    NoUserFound,
+
     #[error("No corresponding API key found")]
     NoCorrespondingAPIKey,
 
+    #[error("Update Error")]
+    UpdateError,
+
     #[error("Database Error")]
     DB(#[from] mongodb::error::Error),
+
+    #[error("Mongo Database Error")]
+    MongoDB(#[from] mongodb::bson::oid::Error),
 
     #[error("Request error")]
     Request(#[from] reqwest::Error),
@@ -58,15 +67,28 @@ impl<'r> Responder<'r, 'static> for Error {
             Error::NotAdmin => {
                 response::status::Unauthorized(Some(self.to_string())).respond_to(req)
             }
+            Error::UpdateError => {
+                response::status::Custom(Status::NotFound, "User not found".to_string())
+                    .respond_to(req)
+            }
 
             Error::NoCorrespondingAPIKey => {
                 response::status::Unauthorized(Some(self.to_string())).respond_to(req)
+            }
+
+            Error::NoUserFound => {
+                response::status::Custom(Status::NotFound, "User not found".to_string())
+                    .respond_to(req)
             }
 
             Error::ResponseDeserialization(err) => {
                 response::status::Custom(Status::BadRequest, err.to_string()).respond_to(req)
             }
             Error::DB(err) => {
+                response::status::Custom(Status::InternalServerError, err.to_string())
+                    .respond_to(req)
+            }
+            Error::MongoDB(err) => {
                 response::status::Custom(Status::InternalServerError, err.to_string())
                     .respond_to(req)
             }

@@ -38,6 +38,8 @@ package-lock.json
 
 /api/target
 *git .env
+/api/.env
+/api/Rocket.toml
 
 frontend/pnpm-lock.yaml
 frontend/playwright-report/

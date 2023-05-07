@@ -3,7 +3,7 @@ import reactLogo from './../assets/react.svg'
 import viteLogo from '/vite.svg'
 
 
-export function HomeLayout(props: unknown) {
+export function HomeLayout() {
     const [count, setCount] = useState(0);
     return (
         <>

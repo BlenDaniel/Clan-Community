@@ -3,12 +3,15 @@ import "./App.css";
 import CommunityList from "./renderer/views/community/list/CommunityList";
 import CommunityNew from "./renderer/views/community/new/CommunityNew";
 import CommunityDetail from "./renderer/views/community/detail/CommunityDetail";
-import Navbar from "./renderer/components/Navbar";
+import NavBar from './renderer/components/NavBar';
+
 
 function App() {
+  
   return (
     <>
-      <Navbar />
+      <NavBar></NavBar>
+      <main>I like it</main>
       <BrowserRouter>
         <div className="App">
           <Routes>

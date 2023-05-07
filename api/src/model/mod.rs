@@ -2,7 +2,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize, FromForm)]
 pub struct User {
-    pub user_id: String,
-    pub name: String,
-    pub location: String
+    id: String,
+    username: String,
+    email: String,
+    password: String,
+    // Add other fields as needed
 }

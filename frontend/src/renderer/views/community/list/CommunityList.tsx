@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import  { useEffect } from "react"
 import useViewModel from "./ViewModel"
 import List from "../../../components/List"
 import { useNavigate } from "react-router-dom";

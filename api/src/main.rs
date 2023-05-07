@@ -7,19 +7,19 @@ extern crate rocket;
 pub extern crate lazy_static;
 
 mod cors;
-use mongodb::bson::doc;
-use rocket::Request;
-use rocket::{serde::json::Json};
+use crate::error::Error;
+use mongodb::bson::{self, doc};
+
+use rocket::{delete, get, post, put, serde::json::Json, Request, figment::{Figment, providers::{Serialized, Toml, Format}}};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
-
-use crate::error::Error;
+use dotenv::dotenv;
 mod error;
 mod model;
-
 use model::User;
-
+use rocket::config::{Config};
 type Result<T> = std::result::Result<T, Error>;
+
 
 /// Automatic database connection using the connection string in Rocket.toml
 ///
@@ -29,7 +29,7 @@ type Result<T> = std::result::Result<T, Error>;
 pub struct DB(mongodb::Client);
 
 #[cfg(debug_assertions)]
-pub const ACTIVE_DB: &str = "clan-community-dev";
+pub const ACTIVE_DB: &str = "clan_community";
 
 #[cfg(not(debug_assertions))]
 pub const ACTIVE_DB: &str = "clan-community";
@@ -45,7 +45,7 @@ fn catch_malformed_request(req: &Request) -> String {
     format!("{req}")
 }
 
-#[get("/api/v1/status")]
+#[get("/api/status")]
 fn status() -> &'static str {
     "The V1 API is live!"
 }
@@ -55,8 +55,12 @@ fn ping() -> Result<Json<String>> {
     Ok(Json(String::from("I ping you back ... ")))
 }
 
-#[get("/api/v1/users")]
-async fn all_users(db: Connection<DB>) -> Result<Json<Vec<User>>> {
+
+
+
+
+#[get("/api/users")]
+async fn get_all_users(db: Connection<DB>) -> Result<Json<Vec<User>>> {
     let mut cursor = db
         .database(ACTIVE_DB)
         .collection::<User>("users")
@@ -71,21 +75,86 @@ async fn all_users(db: Connection<DB>) -> Result<Json<Vec<User>>> {
     Ok(Json(users))
 }
 
-#[post("/api/v1/new/user", data = "<data>")]
-async fn new_user(data: Json<User>, db: Connection<DB>) -> Result<()> {
-    db.database(ACTIVE_DB)
-        .collection("users")
-        .insert_one(data.into_inner(), None)
-        .await?;
+#[post("/api/users", data = "<user>")]
+async fn new_user(user: Json<User>, db: Connection<DB>) -> Result<()> {
+    let database = db.database(ACTIVE_DB);
+    let users_collection = database.collection("users");
+    users_collection.insert_one(user.into_inner(), None).await?;
+    Ok(())
+}
+
+#[get("/api/users/<id>")]
+async fn get_user(id: String, db: Connection<DB>) -> Result<Json<User>> {
+    let database = db.database(ACTIVE_DB);
+    let users_collection = database.collection::<User>("users");
+
+    let filter = doc! { "id": id };
+    match users_collection.find_one(filter, None).await {
+        Ok(Some(user)) => Ok(Json(user)),
+        Ok(None) => Err(Error::NoUserFound),
+        Err(error) => Err(Error::DB(error)),
+    }
+}
+
+#[put("/api/users/<id>", data = "<user>")]
+async fn update_user(id: String, user: Json<User>, db: Connection<DB>) -> Result<()> {
+    let database = db.database(ACTIVE_DB);
+    let users_collection = database.collection::<User>("users");
+    let filter = doc! { "id": id };
+    let update_doc = match bson::to_document(&user.into_inner()) {
+        Ok(doc) => doc,
+        Err(_) => return Err(Error::UpdateError),
+    };
+
+    users_collection
+        .update_one(filter, update_doc, None)
+        .await
+        .map_err(|_| Error::UpdateError)?;
 
     Ok(())
 }
 
+
+#[delete("/api/users/<id>")]
+async fn delete_user(id: String, db: Connection<DB>) -> Result<()> {
+    let database = db.database(ACTIVE_DB);
+    let users_collection = database.collection::<User>("users");
+    let filter = doc! { "id": id };
+
+    users_collection
+        .delete_one(filter, None)
+        .await
+        .map_err(|error| Error::DB(error.into()))?;
+
+    Ok(())
+}
+
+
 #[launch]
 pub fn rocket() -> _ {
-    rocket::build()
+    // Load environment variables from .env file
+    dotenv().ok();
+
+
+    let figment = Figment::from(rocket::Config::default())
+        .merge(Serialized::defaults(Config::default()))
+        .merge(Toml::file("Rocket.toml").nested());
+
+
+    rocket::custom(figment)
         .register("/", catchers![catch_malformed_request])
         .attach(DB::init())
         .attach(cors::CORS)
-        .mount("/", routes![status, ping, all_users, new_user,])
+        .mount(
+            "/",
+            routes![
+                status,
+                ping,
+                delete_user,
+                new_user,
+                update_user,
+                get_user,
+                get_all_users
+            ],
+        )
 }

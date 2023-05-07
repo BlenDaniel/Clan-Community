@@ -18,7 +18,7 @@ export default function CommunityNewViewModel() {
   }
 
   async function saveCommunity() {
-    const { result, error } = await CreateCommunityUseCase(values);
+    const {  error } = await CreateCommunityUseCase(values);
     setError(error!);
   }
 
