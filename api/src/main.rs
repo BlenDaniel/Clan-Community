@@ -7,19 +7,21 @@ extern crate rocket;
 pub extern crate lazy_static;
 
 mod cors;
-use crate::error::Error;
-use mongodb::bson::{self, doc};
-
-use rocket::{delete, get, post, put, serde::json::Json, Request, figment::{Figment, providers::{Serialized, Toml, Format}}};
+use mongodb::bson::{doc, self};
+use rocket::Request;
+use rocket::response::status::NoContent;
+use rocket::{serde::json::Json};
 use rocket_db_pools::{Connection, Database};
 use serde::{Deserialize, Serialize};
-use dotenv::dotenv;
+
+use crate::error::Error;
+use crate::model::Auth;
 mod error;
 mod model;
-use model::User;
-use rocket::config::{Config};
-type Result<T> = std::result::Result<T, Error>;
 
+use model::User;
+
+type Result<T> = std::result::Result<T, Error>;
 
 /// Automatic database connection using the connection string in Rocket.toml
 ///
@@ -55,10 +57,6 @@ fn ping() -> Result<Json<String>> {
     Ok(Json(String::from("I ping you back ... ")))
 }
 
-
-
-
-
 #[get("/api/users")]
 async fn get_all_users(db: Connection<DB>) -> Result<Json<Vec<User>>> {
     let mut cursor = db
@@ -75,15 +73,58 @@ async fn get_all_users(db: Connection<DB>) -> Result<Json<Vec<User>>> {
     Ok(Json(users))
 }
 
-#[post("/api/users", data = "<user>")]
-async fn new_user(user: Json<User>, db: Connection<DB>) -> Result<()> {
+#[post("/api/auth/signup", data = "<user>")]
+async fn new_user(user: Json<User>, db: Connection<DB>) -> Result<Json<User>> {
     let database = db.database(ACTIVE_DB);
     let users_collection = database.collection("users");
-    users_collection.insert_one(user.into_inner(), None).await?;
-    Ok(())
+    let inserted_user = users_collection.insert_one(user.into_inner(), None).await?;
+    let inserted_user = inserted_user
+        .inserted_id
+        .as_object_id()
+        .expect("Failed to get inserted user ID");
+    let inserted_user = users_collection
+        .find_one(
+            doc! {
+                "_id": inserted_user.clone(),
+            },
+            None,
+        )
+        .await?
+        .expect("Failed to find inserted user");
+    Ok(Json(inserted_user))
 }
 
-#[get("/api/users/<id>")]
+#[post("/api/auth/signin", data = "<auth>")]
+async fn signin(auth: Json<Auth>, db: Connection<DB>) -> Result<Json<User>> {
+    // Extract the email and password from the request body
+    let email = &auth.email_private;
+    let password = &auth.password_private;
+
+    // Retrieve the database collection
+    let database = db.database(ACTIVE_DB);
+    let users_collection = database.collection::<User>("users");
+
+    // Create the filter document
+    let filter = doc! { "email": email, "password": password };
+
+    // Find the user matching the filter
+    if let Some(user) = users_collection.find_one(filter, None).await? {
+        Ok(Json(user))
+    } else {
+        Err(Error::NoUserFound)
+    }
+}
+
+#[options("/api/auth/signin")]
+fn options_log_in() -> NoContent {
+    NoContent
+}
+#[options("/api/auth/signup")]
+fn options_new_user() -> NoContent {
+    NoContent
+}
+
+#[get("/api/auth/get_user/<id>")]
 async fn get_user(id: String, db: Connection<DB>) -> Result<Json<User>> {
     let database = db.database(ACTIVE_DB);
     let users_collection = database.collection::<User>("users");
@@ -114,7 +155,6 @@ async fn update_user(id: String, user: Json<User>, db: Connection<DB>) -> Result
     Ok(())
 }
 
-
 #[delete("/api/users/<id>")]
 async fn delete_user(id: String, db: Connection<DB>) -> Result<()> {
     let database = db.database(ACTIVE_DB);
@@ -129,32 +169,22 @@ async fn delete_user(id: String, db: Connection<DB>) -> Result<()> {
     Ok(())
 }
 
-
 #[launch]
 pub fn rocket() -> _ {
-    // Load environment variables from .env file
-    dotenv().ok();
-
-
-    let figment = Figment::from(rocket::Config::default())
-        .merge(Serialized::defaults(Config::default()))
-        .merge(Toml::file("Rocket.toml").nested());
-
-
-    rocket::custom(figment)
+    rocket::build()
         .register("/", catchers![catch_malformed_request])
         .attach(DB::init())
         .attach(cors::CORS)
-        .mount(
-            "/",
-            routes![
-                status,
-                ping,
-                delete_user,
-                new_user,
-                update_user,
-                get_user,
-                get_all_users
-            ],
-        )
+        .mount("/", routes![
+            status,
+            ping,
+            delete_user,
+            new_user,
+            update_user,
+            get_user,
+            get_all_users,
+            signin,
+            options_new_user,
+            options_log_in
+        ])
 }

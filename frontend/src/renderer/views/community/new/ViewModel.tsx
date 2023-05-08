@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CreateCommunityUseCase } from "../../../../services/community/Create";
+import { CreateCommunityUseCase } from "../../../../services/community/CRUD";
 
 type CommunityNewValues = {
   name: string;

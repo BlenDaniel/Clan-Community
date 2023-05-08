@@ -1,5 +1,5 @@
 import { Field, Form, Formik, ErrorMessage } from "formik";
-import useViewModel from "./ViewModel";
+import RegisterViewModel from "./ViewModel";
 import { useEffect } from "react";
 
 export default function Register() {
@@ -9,9 +9,11 @@ export default function Register() {
     initialValues,
     validationSchema,
     handleRegister,
-  } = useViewModel();
+    checkCurrentUser,
+  } = RegisterViewModel();
 
   useEffect(() => {
+    checkCurrentUser();
     return;
   }, []);
 

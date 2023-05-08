@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getCommunitiesUseCase } from "../../../../services/community/Get";
+import { getCommunitiesUseCase } from "../../../../services/community/CRUD";
 
 interface CommunityListViewModel {
     error: string;

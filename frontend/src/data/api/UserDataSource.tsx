@@ -42,10 +42,7 @@ export async function getOne(
 
 export async function create(UserData: User): Promise<{ error: string | null; result: boolean }> {
   try {
-    const response = await axios.post(`${API_URL}/users`, UserData);
-    const result = response.data;
-
-    return Promise.resolve({ error: null, result: true });
+    return Promise.resolve(await axios.post(`${API_URL}/users`, UserData));
   } catch (error: any) {
     return Promise.resolve({ error: error.message, result: false });
   }

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import * as Yup from "yup";
-import AuthService from "../services/auth.service";
+import AuthService from "../../../../services/auth/AuthService";
+import { useNavigate } from 'react-router-dom';
+
 
 interface FormValues {
   username: string;
@@ -20,10 +22,11 @@ interface RegisterViewModelInterface {
   message: string;
   validationSchema(): Yup.Schema<FormValues>;
   handleRegister(formValue: FormValues): Promise<RegisterResponse>;
+  checkCurrentUser:() => void;
 }
 
-const RegisterViewModel = (): RegisterViewModelInterface => {
-  const [error, setError] = useState("");
+export default function  RegisterViewModel(): RegisterViewModelInterface {
+  const navigate = useNavigate();
   const [successful, setSuccessful] = useState(false);
   const [message, setMessage] = useState("");
   const initialValues: FormValues = {
@@ -59,28 +62,38 @@ const RegisterViewModel = (): RegisterViewModelInterface => {
 
     return new Promise<RegisterResponse>((resolve, reject) => {
       AuthService.register(username, email, password)
-        .then((response: { data: { message: any } }) => {
+        .then((response: any) => {
+          window.location.reload();
           setSuccessful(true);
-          setMessage(response.data.message);
-          resolve({ data: { message: response.data.message } });
+          setMessage(JSON.stringify(response));
+          console.log(response)
+          resolve(response);
+          
         })
         .catch((error: any) => {
           setSuccessful(false);
           setMessage(
-            error.response?.data?.message || error.message || error.toString()
+            error.toString()
           );
           reject(error);
         });
     });
   };
+  const checkCurrentUser = () => {
+    const currentUser = AuthService.getCurrentUser();
 
+    if (currentUser) {
+      navigate(`/community/new`);
+    }
+  };
+  
   return {
     initialValues,
     successful,
     message,
     validationSchema,
     handleRegister,
+    checkCurrentUser,
   };
-};
+}
 
-export default RegisterViewModel;

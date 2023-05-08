@@ -2,7 +2,12 @@ import React from "react";
 import NavDropDownItem from "./NavDropDownItem";
 import { BeakerIcon } from "@heroicons/react/24/outline";
 
-export default function NavBar() {
+type NavBarProps = {
+  userState: boolean;
+  onLogout: () => void;
+};
+
+const NavBar: React.FC<NavBarProps> = ({ userState, onLogout }) => {
   const [open, setOpen] = React.useState(false);
   const [flyer, setFlyer] = React.useState(false);
 
@@ -169,20 +174,32 @@ export default function NavBar() {
               </a>
             </nav>
             {/* Sign up/Sign in */}
-            <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
-              <a
-                href="#"
-                className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"
-              >
-                Sign in
-              </a>
-              <a
-                href="#"
-                className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-              >
-                Sign up
-              </a>
-            </div>
+            {userState ? (
+              <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
+                <a
+                  href=""
+                  className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"
+                  onClick={onLogout}
+                >
+                  Log out
+                </a>
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
+                <a
+                  href="/login"
+                  className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"
+                >
+                  Sign in
+                </a>
+                <a
+                  href="/register"
+                  className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                >
+                  Sign up
+                </a>
+              </div>
+            )}
           </div>
         </div>
 
@@ -415,24 +432,41 @@ export default function NavBar() {
                   Events
                 </a>
               </div>
-              <div>
-                <a
-                  href="#"
-                  className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-                >
-                  Sign up
-                </a>
-                <p className="mt-6 text-center text-base font-medium text-gray-500">
-                  Existing customer?
-                  <a href="#" className="text-indigo-600 hover:text-indigo-500">
-                    Sign in
+              {userState ? (
+                <div>
+                  <a
+                    href="/login"
+                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                    onClick={onLogout}
+                  >
+                    Log out
                   </a>
-                </p>
-              </div>
+                </div>
+              ) : (
+                <div>
+                  <a
+                    href="/register"
+                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Sign up
+                  </a>
+                  <p className="mt-6 text-center text-base font-medium text-gray-500">
+                    Existing customer?
+                    <a
+                      href="/login"
+                      className="text-indigo-600 hover:text-indigo-500"
+                    >
+                      Sign in
+                    </a>
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
     </>
   );
-}
+};
+
+export default NavBar;

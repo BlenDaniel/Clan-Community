@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { GetCommunityUseCase } from "../../../../services/community/Get";
-import { UpdateCommunityUseCase } from "../../../../services/community/Update";
-import { DeleteCommunityUseCase } from "../../../../services/community/Delete";
+import { GetCommunityUseCase } from "../../../../services/community/CRUD";
+import { UpdateCommunityUseCase } from "../../../../services/community/CRUD";
+import { DeleteCommunityUseCase } from "../../../../services/community/CRUD";
 
 
 interface CommunityDetailViewModel {
