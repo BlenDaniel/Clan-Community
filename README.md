@@ -1,4 +1,16 @@
-## Development
+## CA-CS-804-B Web Application Development
+
+The project is done using React framework with Tailwind CSS for the frontend and Rust with Rocket for the API.
+
+1. Frontend
+I used a MVVM architecture to implement the frontend using React and Taliwind CSS. The foundation is up and running and after going into the frontend directory and running it, you can view the work I did on the https://localhost:3000.
+
+2. API
+The api is done using Rocket, which is a web framework for Rust that makes it simple to write fast, secure web applications without sacrificing flexibility, usability, or type safety.
+
+
+
+## Installation
 
 To run automatically, install Docker and run:
 

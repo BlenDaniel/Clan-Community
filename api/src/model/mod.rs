@@ -6,6 +6,7 @@ pub struct User {
     pub name: String,
     pub email: String,
     pub address: String,
+    pub password: String,
     pub dob: Date,
     pub phone: String,
     pub urls: Vec<String>,

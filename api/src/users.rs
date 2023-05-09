@@ -27,7 +27,7 @@ pub async fn delete_user(id: String, db: Connection<DB>) -> Result<()> {
     Ok(())
 }
 
-#[put("/api/users/<id>", data = "<user>")]
+#[put("/api/update/user/<id>", data = "<user>")]
 pub async fn update_user(id: String, user: Json<User>, db: Connection<DB>) -> Result<()> {
     let database = db.database(ACTIVE_DB);
     let users_collection = database.collection::<User>("users");
@@ -48,7 +48,7 @@ pub async fn update_user(id: String, user: Json<User>, db: Connection<DB>) -> Re
 
 
 
-#[get("/api/auth/get_user/<id>")]
+#[get("/api/auth/getuser/<id>")]
 pub async fn get_user(id: String, db: Connection<DB>) -> Result<Json<User>> {
     let database = db.database(ACTIVE_DB);
     let users_collection = database.collection::<User>("users");
@@ -105,7 +105,7 @@ pub async fn new_user(user: Json<User>, db: Connection<DB>) -> Result<Json<User>
     Ok(Json(inserted_user))
 }
 
-#[get("/api/users")]
+#[get("/api/all/users")]
 pub async fn get_all_users(db: Connection<DB>) -> Result<Json<Vec<User>>> {
     let mut cursor = db
         .database(ACTIVE_DB)
