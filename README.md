@@ -4,7 +4,7 @@ To run automatically, install Docker and run:
 
 ```
 docker network create caddy
-docker compose -f docker-compose.local.yml  up --build -d
+docker compose -f docker-compose.yml  up --build -d
 ```
 
 This will start your services as close to production as possible, just not available at the normal domain but on localhost.

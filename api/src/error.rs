@@ -29,6 +29,12 @@ pub enum Error {
     #[error("User not found")]
     NoUserFound,
 
+    #[error("Post not found")]
+    NoPostFound,
+
+    #[error("Community not found")]
+    NoCommunityFound,
+
     #[error("No corresponding API key found")]
     NoCorrespondingAPIKey,
 
@@ -78,6 +84,16 @@ impl<'r> Responder<'r, 'static> for Error {
 
             Error::NoUserFound => {
                 response::status::Custom(Status::NotFound, "User not found".to_string())
+                    .respond_to(req)
+            }
+
+            Error::NoPostFound => {
+                response::status::Custom(Status::NotFound, "Post not found".to_string())
+                    .respond_to(req)
+            }
+
+            Error::NoCommunityFound => {
+                response::status::Custom(Status::NotFound, "Community not found".to_string())
                     .respond_to(req)
             }
 
