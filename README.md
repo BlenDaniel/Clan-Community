@@ -7,7 +7,6 @@ docker network create caddy
 docker compose -f docker-compose.local.yml  up --build -d
 ```
 
-
 This will start your services as close to production as possible, just not available at the normal domain but on localhost.
 
 Docker will eat up all your disk space with build cache, so you might want to clean it up from time to time. To do so, run 

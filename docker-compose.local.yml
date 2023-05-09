@@ -16,6 +16,7 @@ services:
     restart: unless-stopped
   api:
     build: ./api
+    image: clancommunity.azurecr.io/api
     volumes:
       - ./api:/usr/src/api
     restart: unless-stopped

@@ -83,7 +83,7 @@ export default function  RegisterViewModel(): RegisterViewModelInterface {
     const currentUser = AuthService.getCurrentUser();
 
     if (currentUser) {
-      navigate(`/community/new`);
+      navigate(`/home/community/`);
     }
   };
   

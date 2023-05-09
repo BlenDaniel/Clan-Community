@@ -11,7 +11,7 @@ export default function CommunityNew() {
   useEffect(() => {return; }, []);
 
   return (
-    <div className="page">
+    <div className="page px-11" >
       <div
         style={{
           display: "flex",

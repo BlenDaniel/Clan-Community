@@ -33,7 +33,7 @@ export default function LogInViewModel(): LoginViewModel {
     AuthService.login(email, password)
       .then(() => {
         window.location.reload();
-        navigate(`/community/new`);
+        navigate(`/home/community/`);
       })
       .catch((error: any) => {
         const resMessage =
@@ -50,7 +50,7 @@ export default function LogInViewModel(): LoginViewModel {
     const currentUser = AuthService.getCurrentUser();
 
     if (currentUser) {
-      navigate(`/community/new`);
+      navigate(`/home/community/`);
     }
   };
 

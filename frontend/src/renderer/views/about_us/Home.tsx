@@ -1,11 +1,13 @@
 import { Component } from "react";
+
+import NavBar from "../../components/NavBar";
 import AuthService from "../../../services/auth/AuthService";
 import EventBus from "../../../utils/EventBus";
 import { Route, Routes } from "react-router-dom";
 import CommunityList from "../community/list/CommunityList";
 import CommunityNew from "../community/new/CommunityNew";
 import CommunityDetail from "../community/detail/CommunityDetail";
-import NavBarHome from '../../components/NavBarHome';
+
 
 type Props = object;
 
@@ -52,7 +54,7 @@ class Home extends Component<Props, State> {
 
     return (
       <>
-       <NavBarHome userState={userState} onLogout={this.logOut} />
+        <NavBar userState={userState} onLogout={this.logOut} />
      
         <div>
           <Routes>

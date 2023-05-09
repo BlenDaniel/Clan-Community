@@ -37,6 +37,6 @@ ENV ROCKET_ADDRESS=0.0.0.0
 ENV ROCKET_PORT=8000
 ENV RUST_BACKTRACE=1
 EXPOSE 8000
-RUN cargo install --path .
+RUN cargo build --config net.git-fetch-with-cli=true --release
 
-CMD ["server"]
+CMD ["./target/release/server"]

@@ -49,12 +49,14 @@ export default function CommunityDetail() {
           placeholder="Community Name"
           autoFocus={true}
           value={name}
+          className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
           onChange={(e) => onChange(e.target.value, "name")}
         />
         <TextInput
           placeholder="Community Price"
           type="number"
           value={price}
+          className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
           onChange={(e) => onChange(e.target.value, "price")}
         />
       </div>
