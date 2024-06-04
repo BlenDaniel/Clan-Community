@@ -1,4 +1,4 @@
-## CA-CS-804-B Web Application Development
+## Clan Community 
 
 The project is done using React framework with Tailwind CSS for the frontend and Rust with Rocket for the API.
 
